@@ -91,7 +91,7 @@ for province, pdata in tqdm(tuplelist[2:10]):
     _c = i % (n_col)
     _r = i // (n_col)
     if _r == n_row-1:
-        pl.xlabel('days since Jan. 20')
+        pl.xlabel('days since Jan. 20th')
     if _c == 0 and _r == 0:
         pl.ylabel('confirmed cases',)
         pl.gca().yaxis.set_label_coords(-0.3,-0.2)

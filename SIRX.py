@@ -119,7 +119,7 @@ class SIRXShutdownModel:
         dy[0] = -eta*S*I - xi*S
         dy[1] = +eta*S*I - rho*I - xi*I
         dy[2] = +kappa*I
-        dy[3] = +kappa*xi*S
+        dy[3] = +xi*S
 
 
         return dy

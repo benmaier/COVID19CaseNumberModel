@@ -95,7 +95,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     _c = i % (n_col)
     _r = i // (n_col)
     if _r == n_row-1:
-        pl.xlabel('days since Jan. 20')
+        pl.xlabel('days since Jan. 20th')
     if _c == 0 and _r == 0:
         pass
         #pl.ylabel('confirmed cases',)
@@ -159,7 +159,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.4,hspace=0.3)
-pl.gcf().savefig("powerlaw_fit_figures/fit_powerlaw_small_hubei_china.png",dpi=300)
+pl.gcf().savefig("powerlaw_fit_figures/fit_powerlaw_small_hubei_china.png",dpi=300,transparent=True)
 
 
 
