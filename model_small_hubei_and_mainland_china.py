@@ -16,6 +16,9 @@ from matplotlib.dates import (DAILY, DateFormatter,
 
 import bfmplot as bp
 
+import matplotlib.pyplot as mpl
+mpl.rcParams['font.size'] = 11
+
 model = SIRXConfirmedModel()
 
 colors = simple_cycler(brewer_qualitative)
@@ -64,14 +67,14 @@ else:
 letter = "abcdefg"
 roman = [ "i", "ii", "iii", "iv", "v", "vi"]
 
-ylims = [[0,60000],[0,15000]]
+ylims = [[100,100000],[10,20000]]
 max_dates = ['Feb. 7th', 'Feb. 1st.']
-max_dates_pos = [32000,9000]
+max_dates_pos = [60000,15000]
 max_dates_va = ['bottom']*2
 
 
 i = -1
-fig, ax = pl.subplots(1,2,figsize=(8,3))
+fig, ax = pl.subplots(1,2,figsize=(3.5,2))
 curves = {}
 for province, pdata in tqdm(tuplelist[:2]):
     i += 1
@@ -128,20 +131,20 @@ for province, pdata in tqdm(tuplelist[:2]):
     curves[i]['S+Z'] ={ 'x': tt, 'y':S+Z}
 
 
-    Xlabel = '$X$ (model fit)' if i == 0 else None
-    Ilabel = '$I$ (model fit)' if i == 0 else None
-    ax[i].plot(dates, cases,marker=markers[i],c=colors[i],label=r'$C$ ({})'.format(titlemap[province]),mfc='None',)
-    ax[i].plot_date(tt_dates, X,'-',c='k',label=Xlabel)
-    ax[i].plot_date(tt_dates, I,'--',c=colors[2],lw=2,label=Ilabel)
-    ax[i].plot([max_date]*2, [0,max_dates_pos[i]],':',c=colors[0],lw=1.5)
-    ax[i].text(max_date, max_dates_pos[i], max_dates[i],
-            transform=ax[i].transData,
-            ha='right',
-            va=max_dates_va[i],
-            color=colors[0],
-            fontsize=9,
-            bbox={'facecolor':'w','edgecolor':'w','pad':0}
-            )
+    Xlabel = None
+    Ilabel = None
+    ax[i].plot(t, cases,marker=markers[i],c=colors[i],label=None,mfc='None',)
+    ax[i].plot(tt, X,'-',c='k',label=Xlabel)
+    ax[i].plot(tt, I,'--',c=colors[2],lw=1.5,label=Ilabel)
+    ax[i].plot([max_tt]*2, [0,max_dates_pos[i]],':',c=colors[0],lw=1.5)
+    #ax[i].text(max_tt, max_dates_pos[i], max_dates[i],
+    #        transform=ax[i].transData,
+    #        ha='right',
+    #        va=max_dates_va[i],
+    #        color=colors[0],
+    #        fontsize=9,
+    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
+    #        )
 
 
     #ax[0].plot(tt, Q,c='k',label='$Q_I$ (detected and quarantined)')
@@ -153,7 +156,6 @@ for province, pdata in tqdm(tuplelist[:2]):
     
     _c = i % n_col
     _r = i // n_col
-    ax[i].set_ylabel('confirmed cases')
     #pl.title(titlemap[province])
     #ax[i].text(0.03,0.97,
     #        "{}.{}".format(letter[_r], roman[_c]),
@@ -186,8 +188,8 @@ for province, pdata in tqdm(tuplelist[:2]):
     #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
     #        )
 
-    #ax[i].set_xscale('log')
-    #ax[i].set_yscale('log')
+    ax[i].set_xscale('log')
+    ax[i].set_yscale('log')
     #ylim = pl.gca().get_ylim()
     #min_ylim = 10**np.floor(np.log(ylim[0])/np.log(10))
     #max_ylim = 10**np.ceil(np.log(ylim[1])/np.log(10))
@@ -195,26 +197,22 @@ for province, pdata in tqdm(tuplelist[:2]):
     #    min_ylim = 1
     ax[i].set_ylim(ylims[i])
     #ax[i].set_xlim([1,40])
+    #if i == 1:
+    #    ax[i].set_ylim([10,20000])
+
     bp.strip_axis(ax[0])
     bp.strip_axis(ax[1])
-    leg = ax[i].legend(loc='upper left',handlelength=2)
     #bp.align_legend_right(leg)
-    rule = rrulewrapper(DAILY, interval=7)
-    loc = RRuleLocator(rule)
-    #ax.set_yscale('log')
-    formatter = DateFormatter('%d. %m.')
-    ax[i].xaxis.set_major_locator(loc)    
-    ax[i].xaxis.set_major_formatter(formatter)
-    ax[i].xaxis.set_tick_params(rotation=30, labelsize=10)
     #ax[i].set_yticks([0,10000,20000,30000,40000])
     if i == 0:
-        ax[i].set_yticks([0,20000,40000,60000])
+        ax[i].set_yticks([1e2, 1e3, 1e4, 1e5])
     else:
-        ax[i].set_yticks([0,7500,15000])
-    bp.humanify_yticks(ax[i],precision=0 if i == 0 else 1)
+        ax[i].set_yticks([1e1, 1e2, 1e3, 1e4])
+    #bp.humanify_yticks(ax[i],precision=0 if i == 0 else 1)
+    ax[i].set_xlabel('days since Jan. 20th')
 
-ax[0].text(-0.18,1.03,'A',fontsize=14,fontweight='bold',transform=ax[0].transAxes,va='top')
-ax[1].text(-0.21,1.03,'B',fontsize=14,fontweight='bold',transform=ax[1].transAxes,va='top')
+#ax[0].text(-0.18,1.03,'A',fontsize=14,fontweight='bold',transform=ax[0].transAxes,va='top')
+#ax[1].text(-0.21,1.03,'B',fontsize=14,fontweight='bold',transform=ax[1].transAxes,va='top')
 
 pl.gcf().tight_layout()
 
@@ -280,7 +278,7 @@ pl.gcf().tight_layout()
 
 
 #pl.gcf().subplots_adjust(wspace=0.3,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/hubei_and_rest.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/small_hubei_and_mainland_china.png",dpi=300,transparent=True)
 
 if not loaded_fits:
     with open('fit_parameters/hubei_china.p','wb') as f:

@@ -280,7 +280,7 @@ pl.gcf().tight_layout()
 
 
 #pl.gcf().subplots_adjust(wspace=0.3,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/hubei_and_rest.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/hubei_and_mainland_china.png",dpi=300)
 
 if not loaded_fits:
     with open('fit_parameters/hubei_china.p','wb') as f:
