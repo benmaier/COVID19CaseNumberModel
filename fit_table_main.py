@@ -33,7 +33,7 @@ tuplelist = [ (p, d)  for p, d in data.items()\
                              ]
 
 tuplelist = sorted([ t for t in tuplelist ],key=lambda x: -max(x[1]['cases']))
-titlemap = REPL({'mainland_china':'all w/o Hubei'})
+titlemap = REPL({'mainland_china':'All exc. Hubei'})
 
 tabledata = []
 for province, pdata in tuplelist[:10]:
