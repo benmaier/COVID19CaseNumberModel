@@ -126,6 +126,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     curves[i]['X'] = {'x': tt_dates, 'y': X}
     curves[i]['S'] = {'x': tt, 'y': S}
     curves[i]['S+Z'] ={ 'x': tt, 'y':S+Z}
+    print(X[-1])
 
 
     Xlabel = '$X$ (model fit)' if i == 0 else None

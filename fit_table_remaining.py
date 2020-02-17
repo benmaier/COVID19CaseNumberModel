@@ -16,7 +16,7 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('fit_parameters/confirmed_cases_500.p','rb') as f:
+with open('fit_parameters/all_provinces.p','rb') as f:
     fit_parameters = pickle.load(f)
 
 with open('fit_parameters/hubei_china.p','rb') as f:
@@ -36,23 +36,25 @@ tuplelist = sorted([ t for t in tuplelist ],key=lambda x: -max(x[1]['cases']))
 titlemap = REPL({'mainland_china':'all w/o Hubei'})
 
 tabledata = []
-for province, pdata in tuplelist[:10]:
+for province, pdata in tuplelist[10:]:
     p = fit_parameters[province]
     k = p['kappa'].value
     k0 = p['kappa0'].value
     b = p['rho'].value
+    a = p['eta'].value
     I0f = p['I0_factor'].value
 
     N = pdata['population'] / 1e6
 
     Q = (k+k0)/(b+k+k0)
     P = k0/(k+k0)
-    tabledata.append([titlemap[province], N, Q, P, I0f])
-print(tabulate(tabledata,headers=['Province', '$N$','$Q$', '$P$', '$I_0/Q_0$'],floatfmt=("",".1f", ".2f", ".2f",".2f",".2f") ))
-latex = str(tabulate(tabledata,headers=['Province', '$N/10^6$','$Q$', '$P$', '$I_0/Q_0$'],tablefmt="latex_raw",floatfmt=("",".1f", ".2f", ".2f",".2f",".2f") ))
+    R0eff = a / (b+k+k0)
+    tabledata.append([titlemap[province], N, Q, P, I0f, R0eff, ])
+print(tabulate(tabledata,headers=['Province', '$N/10^6$','$Q$', '$P$', '$I_0/X_0$', '$R_{0,\mathrm{eff}}$'],floatfmt=("",".1f", ".2f", ".2f",".2f",".2f") ))
+latex = str(tabulate(tabledata,headers=['Province', '$N/10^6$','$Q$', '$P$', '$I_0/X_0$','$R_{0,\mathrm{eff}}$'],tablefmt="latex_raw",floatfmt=("",".1f", ".2f", ".2f",".2f",".2f") ))
 
 
-with open('fit_parameters/parameters.tex','w') as f:
+with open('fit_parameters/parameters_remaining_provinces.tex','w') as f:
     f.write(latex)
 
 vals = np.array(tabledata)[:,1:]
