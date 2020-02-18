@@ -1,7 +1,7 @@
 # COVID-19 case number growth
 
 The growth of case numbers concerning the recent COVID-19 outbreak
-in provinces of Mainland China can modeled by a new SIR containment model.
+in provinces of Mainland China can be modeled by a new SIR containment model.
 This is a complimentary repository that contains the data and the analysis discussed in the paper [B. F. Maier and D. Brockmann, "Effective containment explains sub-exponential growth in confirmed cases of recent COVID-19 outbreak in Mainland China", 2020]().
 
 ## Data 
