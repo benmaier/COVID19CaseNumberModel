@@ -48,6 +48,8 @@ Reproduce plots
 python model_fit_confirmed_cases_500.py fit_parameters/confirmed_cases_500.p
 ```
 
+![modelFitConfirmed500](model_fit_figures/model_fit_confirmed_500.png)
+
 In case you want new fits, do
 
 ```
