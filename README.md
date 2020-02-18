@@ -45,14 +45,18 @@ tqdm==4.28.1
 Reproduce plots
 
 ```
+python model_large_hubei_and_mainland_china.py fit_parameters/hubei_china.p
 python model_fit_confirmed_cases_500.py fit_parameters/confirmed_cases_500.p
 ```
+
+![modelFitHubeiMainland](model_fit_figures/hubei_and_mainland_china.png)
 
 ![modelFitConfirmed500](model_fit_figures/model_fit_confirmed_500.png)
 
 In case you want new fits, do
 
 ```
+model_large_hubei_and_mainland_china.py
 python model_fit_confirmed_cases_500.py
 ```
 
