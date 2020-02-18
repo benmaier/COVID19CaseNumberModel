@@ -37,6 +37,7 @@ bfmplot==0.0.7
 lmfit==0.9.12
 tabulate==0.8.2
 matplotlib==3.0.2
+tqdm==4.28.1
 ```
 
 ## Examples
