@@ -77,7 +77,7 @@ class SIRXConfirmedModel:
 
         return residual
 
-    def fit(self,t, data,maxfev=1000,params=None,N=None,Nmax=None):
+    def fit(self,t, data,maxfev=100000,params=None,N=None,Nmax=None):
 
         if params is None:
             params = Parameters()
@@ -96,7 +96,7 @@ class SIRXConfirmedModel:
                 N = 1e7
             if Nmax is None:
                 Nmax=115000000
-            params.add('N',value=N,min=100000,max=Nmax,vary=varyN)
+            params.add('N',value=N,min=maxfev,max=Nmax,vary=varyN)
 
         out = minimize(self.residual, params, args=(t, data, ),maxfev=maxfev)
         return out
