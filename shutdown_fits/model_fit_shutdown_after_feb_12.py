@@ -139,20 +139,20 @@ for province, pdata in tqdm(tuplelist[:]):
             fontsize=12,
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.03,0.8,
+    ax[i].text(0.03,0.8 if province != 'mainland_china' else 0.3,
             titlemap[province],
             transform=ax[i].transAxes,
             ha='left',
             va='top',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    #ax[i].text(0.8,0.15,
-    #        r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
-    #        transform=ax[i].transAxes,
-    #        ha='right',
-    #        va='bottom',
-    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #        )
+    ax[i].text(0.8,0.03,
+            r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
     #ax[i].text(0.8,0.03,
     #        r"$P=%4.2f$" %((params['kappa0'].value)/(params['kappa'].value+params['kappa0'].value)),
     #        transform=ax[i].transAxes,
@@ -177,6 +177,7 @@ for province, pdata in tqdm(tuplelist[:]):
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
 pl.gcf().savefig("model_fit_figures/shutdown_model_all_confirmed_fit_after_feb_12.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/SI_Fig_03.png",dpi=300)
 
 if not loaded_fits:
     with open('fit_parameters/shutdown_model_all_provinces_after_feb_12.p','wb') as f:

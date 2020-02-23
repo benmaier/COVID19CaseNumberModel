@@ -72,6 +72,7 @@ roman = [ "i", "ii", "iii", "iv", "v", "vi"]
 
 ylims = [[100,100000],[10,20000]]
 max_dates = ['Feb. 7th', 'Feb. 1st.']
+change_date = np.datetime64('2020-02-12 18:00')
 max_dates_pos = [60000,15000]
 max_dates_va = ['bottom']*2
 
@@ -151,11 +152,15 @@ for province, pdata in tqdm(tuplelist[:2]):
     Xlabel = None
     Ilabel = None
     ax[i].plot(t, cases,marker=markers[i],c=colors[i],ms=3,label=None,mfc='None',)
-    ax[i].plot(t2, cases2,marker='o',ms=3,c='grey',label=None,mfc='None',)
+    ax[i].plot(t2, cases2,marker='o',ms=5,c='grey',label=None,mfc='None',)
     ax[i].plot(tt1, X[tt<=tswitch],'-',c='k',label=Xlabel)
-    ax[i].plot(tt2, X[tt>tswitch],'-.',c='k',label=None)
+    ax[i].plot(tt2, X[tt>tswitch],'-',c='k',label=None)
     ax[i].plot(tt, I,'--',c=colors[2],lw=1.5,label=Ilabel)
     ax[i].plot([max_tt]*2, [0,max_dates_pos[i]],':',c=colors[0],lw=1.5)
+    ax[i].plot([23,23], [0,[60000,15000][i]],':',c=colors[0],lw=1.5)
+
+
+    #ax[0].plot(tt, Q,c='k',label='$Q_I$ (detected and quarantined)')
     #ax[i].text(max_tt, max_dates_pos[i], max_dates[i],
     #        transform=ax[i].transData,
     #        ha='right',

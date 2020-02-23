@@ -138,7 +138,10 @@ for province, pdata in tqdm(tuplelist[2:10]):
 #S = result[0,:]*N
 
     pl.plot(t, cases,marker=markers[i+2],c=colors[i+2],label='data',mfc='None')
-    pl.plot(tt, X,c='k')
+    pl.plot(t2, cases2,marker='o',ms=5,c='grey',label='data',mfc='None')
+    pl.plot(tt, X,'-',c='k')
+    #pl.plot(tt1, X[tt<=tswitch],'-',c='k')
+    #pl.plot(tt2, X[tt>tswitch],'-',c='k')
     pl.plot(tt, I,'--',c=colors[2],lw=1.5)
     pl.plot([max_tt]*2, [0,max_dates_pos[i]],':',c=colors[0],lw=1.5)
     pl.text(max_tt-1, max_dates_pos[i], max_dates[i],
@@ -149,6 +152,7 @@ for province, pdata in tqdm(tuplelist[2:10]):
             fontsize=9,
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
+    ax[i].plot([22.5,22.5], [0,cases[-1]],':',c=colors[0],lw=1.5)
 
 #pl.plot(tt, S,label='model')
     
@@ -200,7 +204,7 @@ for province, pdata in tqdm(tuplelist[2:10]):
     if min_ylim < 1:
         min_ylim = 1
     #pl.ylim([min_ylim, max_ylim])
-    pl.xlim([1,30])
+    pl.xlim([0,30])
     if _r < n_row-1:
         ax[i].set_xticklabels('')
     #    [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]

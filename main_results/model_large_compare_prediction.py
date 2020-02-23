@@ -56,7 +56,7 @@ n_col = int(np.ceil(np.sqrt(n_fits)))
 n_row = n_col-1
 #ax = ax.flatten()
 
-titlemap = REPL({'mainland_china':'all except Hubei'})
+titlemap = REPL({'mainland_china':'All exc. Hubei'})
 
 if loaded_fits:
     with open(pickle_filename,'rb') as f:
@@ -72,6 +72,10 @@ max_dates = ['Feb. 7th', 'Feb. 1st.']
 hand_len = [2, 0.5]
 max_dates_pos = [29000,9000]
 max_dates_va = ['bottom']*2
+change_dates_pos = [46000,11000]
+change_dates_label_pos = [5000,4000]
+change_dates_label_ha = ['center','right']
+change_dates_va = ['bottom']*2
 
 
 i = -1
@@ -137,6 +141,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     imax = np.argmax(I)
     print(imax)
     max_date = tt_dates[imax]
+    change_date = np.datetime64('2020-02-12 18:00')
     max_tt = tt[imax]
     print(max_date)
 
@@ -150,8 +155,9 @@ for province, pdata in tqdm(tuplelist[:2]):
 
     Xlabel = '$X$ (model fit)' if i == 0 else None
     Ilabel = '$I$ (model fit)' if i == 0 else None
-    ax[i].plot_date(dates, cases,marker=markers[i],c=colors[i],label=r'$C$ ({})'.format(titlemap[province]),mfc='None',ms=6)
+    ax[i].plot_date(dates, cases,marker=markers[i],c=colors[i],label=r'{}'.format(titlemap[province]),mfc='None',ms=6)
     ax[i].plot_date(dates2, cases2,'-',marker='o',c='grey',label="after Feb. 12th",mfc='None',ms=6)
+    #ax[i].plot_date(tt_dates, X,'-',c='k',label=Xlabel)
     ax[i].plot_date(tt1_dates, X[tt<=tswitch],'-',c='k',label=Xlabel)
     ax[i].plot_date(tt2_dates, X[tt>tswitch],'-.',c='k',label=None)
     ax[i].plot_date(tt_dates, I,'--',c=colors[2],lw=2,label=Ilabel)
@@ -164,6 +170,18 @@ for province, pdata in tqdm(tuplelist[:2]):
             fontsize=9,
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
+    ax[i].plot([change_date]*2, [0,change_dates_pos[i]],':',c=colors[0],lw=1.5)
+    ax[i].text(change_date, change_dates_label_pos[i], 'Feb. 12th',
+            transform=ax[i].transData,
+            ha=change_dates_label_ha[i],
+            va='bottom',
+            color=colors[0],
+            fontsize=9,
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
+
+
+    #ax[0].plot(tt, Q,c='k',label='$Q_I$ (detected and quarantined)')
 
 
     #ax[0].plot(tt, Q,c='k',label='$Q_I$ (detected and quarantined)')
