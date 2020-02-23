@@ -26,3 +26,5 @@ a.out
 
 /.vscode/
 /_vscode/
+
+__pycache__
