@@ -15,8 +15,8 @@ It was gathered by the [Johns Hopkins University Center for Systems Science and 
 For the data contained in `mainland_china`, all province data except the one from Hubei
 was aggregated by means of interpolation.
 
-Since beginning at Feb 12, the case data includes symptomatic cases without lab-confirmation, as well,
-we only consider data from before Feb 12 6am.
+Since Feb 12 the case data includes symptomatic cases without lab-confirmation, as well,
+therefore we only consider data from before Feb 12 6am.
 
 ## Prerequisites
 
