@@ -1,4 +1,6 @@
 import sys
+sys.path.insert(0,'..')
+from SIRX import SIRXConfirmedModel
 
 import numpy as np
 from scipy.integrate import ode
@@ -8,7 +10,6 @@ import json
 from tqdm import tqdm
 from bfmplot import pl
 from bfmplot import brewer_qualitative, simple_cycler, markers
-from SIRX import SIRXConfirmedModel
 import pickle
 
 from matplotlib.dates import (DAILY, DateFormatter,
@@ -31,9 +32,9 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
-with open('data/all_confirmed_csse_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_csse_cases_with_population.json','r') as f:
     datafeb = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\

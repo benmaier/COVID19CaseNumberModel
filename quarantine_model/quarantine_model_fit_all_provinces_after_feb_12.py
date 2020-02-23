@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0,'..')
 
 import numpy as np
 from scipy.integrate import ode
@@ -8,12 +9,12 @@ import json
 from tqdm import tqdm
 from bfmplot import pl
 from bfmplot import brewer_qualitative, simple_cycler, markers
-from SIRX import SIRXConfirmedModel
+from SIRX import SIRXQuarantineModel
 import pickle
 
 import bfmplot as bp
 
-model = SIRXConfirmedModel()
+model = SIRXQuarantineModel()
 
 colors = simple_cycler(brewer_qualitative)
 
@@ -28,7 +29,7 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_csse_cases_with_population.json','r') as f:
     data = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\
@@ -70,20 +71,31 @@ for province, pdata in tqdm(tuplelist):
 
     t = np.array(pdata['times'])
     cases = np.array(pdata['cases'])
+    dates = np.array(pdata['dates'],np.datetime64)
+
+    if province == 'Hubei':
+        ndx = dates < np.datetime64("2020-02-13")
+        t = t[ndx]
+        cases = cases[ndx]
+        dates = dates[ndx]
 
     if max(cases) <= 20:
         continue
 
     i0 = np.where(cases>0)[0][0]
+    print(i0)
     t = t[i0:]
     cases = cases[i0:]
+
+    if len(t) < 6:
+        continue
 
     print(pdata['population'])
 
     if loaded_fits: 
         params = fit_parameters[province]
     else:
-        out = model.fit(t,cases,maxfev=1000,N=pdata['population']
+        out = model.fit(t,cases,maxfev=1000,Nmax=pdata['population']
                 )
         params = out.params
         fit_parameters[province] = params
@@ -92,7 +104,7 @@ for province, pdata in tqdm(tuplelist):
 
     pl.sca(ax[i])
 
-    tt = np.logspace(np.log(t[0]), np.log(60), base=np.exp(1))
+    tt = np.logspace(np.log(t[0]), np.log(35), base=np.exp(1))
     result = model.SIRX(tt, cases[0], 
                         params['eta'],
                         params['rho'],
@@ -142,33 +154,32 @@ for province, pdata in tqdm(tuplelist):
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
     ax[i].text(0.8,0.03,
-            r"$P=%4.2f$" %((params['kappa0'].value)/(params['kappa'].value+params['kappa0'].value)),
+            r"$N=%d$" %(params['N'].value),
             transform=ax[i].transAxes,
             ha='right',
             va='bottom',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
 
-    pl.xscale('log')
-    pl.yscale('log')
+    #pl.xscale('log')
+    #pl.yscale('log')
     ylim = pl.gca().get_ylim()
     min_ylim = 10**np.floor(np.log(ylim[0])/np.log(10))
     max_ylim = 10**np.ceil(np.log(ylim[1])/np.log(10))
     if min_ylim < 1:
         min_ylim = 1
-    pl.ylim([min_ylim, max_ylim])
-    pl.xlim([1,60])
+    #pl.ylim([min_ylim, max_ylim])
+    pl.xlim([1,35])
     if _r < n_row-1:
         [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
     bp.strip_axis(pl.gca())
 
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/all_confirmed_fit.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/Fig_03.png",dpi=300)
+#pl.gcf().savefig("model_fit_figures/all_confirmed_fit_after_feb_12.png",dpi=300)
 
 if not loaded_fits:
-    with open('fit_parameters/all_provinces.p','wb') as f:
+    with open('fit_parameters/quarantined_model_all_provinces_after_feb_12.p','wb') as f:
         pickle.dump(fit_parameters,f)
 
 pl.show()

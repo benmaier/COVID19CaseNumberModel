@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0,'..')
 
 import numpy as np
 from scipy.integrate import ode
@@ -31,7 +32,7 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\

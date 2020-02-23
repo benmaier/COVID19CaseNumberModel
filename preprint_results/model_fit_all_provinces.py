@@ -1,5 +1,6 @@
 import sys
 
+sys.path.insert(0,'..')
 import numpy as np
 from scipy.integrate import ode
 from scipy.optimize import curve_fit
@@ -28,7 +29,7 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('data/all_confirmed_csse_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\
@@ -64,31 +65,26 @@ letter = "abcdefg"
 roman = [ "i", "ii", "iii", "iv", "v", "vi"]
 
 
-i = 0
-for province, pdata in tqdm(tuplelist[1:]):
+i = -1
+for province, pdata in tqdm(tuplelist):
     i += 1
 
     t = np.array(pdata['times'])
     cases = np.array(pdata['cases'])
-    dates = np.array(pdata['dates'],np.datetime64)
 
     if max(cases) <= 20:
         continue
 
     i0 = np.where(cases>0)[0][0]
-    print(i0)
     t = t[i0:]
     cases = cases[i0:]
-
-    if len(t) < 6:
-        continue
 
     print(pdata['population'])
 
     if loaded_fits: 
         params = fit_parameters[province]
     else:
-        out = model.fit(t,cases,maxfev=100000,N=pdata['population']
+        out = model.fit(t,cases,maxfev=1000,N=pdata['population']
                 )
         params = out.params
         fit_parameters[province] = params
@@ -169,10 +165,11 @@ for province, pdata in tqdm(tuplelist[1:]):
 
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/all_confirmed_fit_after_feb_12.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/all_confirmed_fit.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/Fig_03.png",dpi=300)
 
 if not loaded_fits:
-    with open('fit_parameters/all_provinces_after_feb_12.p','wb') as f:
+    with open('fit_parameters/all_provinces.p','wb') as f:
         pickle.dump(fit_parameters,f)
 
 pl.show()

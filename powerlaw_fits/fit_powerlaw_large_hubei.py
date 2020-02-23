@@ -28,7 +28,7 @@ class REPL(dict):
 
 
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\

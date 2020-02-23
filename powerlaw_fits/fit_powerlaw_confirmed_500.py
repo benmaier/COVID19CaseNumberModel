@@ -26,7 +26,7 @@ class REPL(dict):
 
 
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\
@@ -42,9 +42,9 @@ tuplelist = sorted([ t for t in tuplelist ],key=lambda x: -max(x[1]['cases']))
 
 n_fits = len(tuplelist)
 n_col = int(np.ceil(np.sqrt(n_fits)))
-n_row = 1
-n_col = 2
-fig, ax = pl.subplots(n_row,n_col,figsize=(3,2))
+n_row = 2
+n_col = 4
+fig, ax = pl.subplots(n_row,n_col,figsize=(8,3))
 ax = ax.flatten()
 
 titlemap = REPL({'mainland_china':'All w/o Hubei'})
@@ -53,7 +53,7 @@ letter = "abcdefg"
 roman = [ "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix"]
 
 i = -1
-for province, pdata in tqdm(tuplelist[:2]):
+for province, pdata in tqdm(tuplelist[2:10]):
     i += 1
     print(province)
 
@@ -68,11 +68,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     t = t[i0:]
     cases = cases[i0:]
 
-    if province != 'Hubei':
-        maxt = 12
-    else:
-        maxt = 19
-    i1 = np.where(t<=maxt)[0][-1]
+    i1 = np.where(t<=12)[0][-1]
     _t = t[:i1+1]
     _cases = cases[:i1+1]
     print(t, cases)
@@ -89,7 +85,7 @@ for province, pdata in tqdm(tuplelist[:2]):
 
     pl.sca(ax[i])
 
-    pl.plot(t, cases,marker=markers[i],c=colors[i],label='data',mfc='None')
+    pl.plot(t, cases,marker=markers[i+2],c=colors[i+2],label='data',mfc='None')
     pl.plot(tt, f(tt,*p),c='k',lw=1,label='$Q_I$')
 
     _c = i % (n_col)
@@ -97,69 +93,68 @@ for province, pdata in tqdm(tuplelist[:2]):
     if _r == n_row-1:
         pl.xlabel('days since Jan. 20th')
     if _c == 0 and _r == 0:
-        pass
-        #pl.ylabel('confirmed cases',)
-        #pl.gca().yaxis.set_label_coords(-0.3,-0.2)
+        pl.ylabel('confirmed cases',)
+        pl.gca().yaxis.set_label_coords(-0.3,-0.2)
     pl.xlim([1,30])
     pl.xscale('log')
     pl.yscale('log')
 
-    ylim = ax[i].set_ylim([10,5e4])
+    ylim = ax[i].set_ylim([1,2e3])
     ylim = ax[i].get_ylim()
-    ax[i].plot([maxt,maxt],ylim,':')
+    ax[i].plot([12,12],ylim,':')
 
-    #ax[i].text(0.03,0.97,
-    #        "{}".format(roman[i]),
-    #        transform=ax[i].transAxes,
-    #        ha='left',
-    #        va='top',
-    #        fontweight='bold',
-    #        fontsize=10,
-    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #        )
-    #ax[i].text(0.75,0.45,
-    #        "Feb. 2nd".format(p[0]),
-    #        transform=ax[i].transAxes,
-    #        ha='center',
-    #        va='bottom',
-    #        fontsize=9,
-    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #        )
-    #ax[i].text([0.2,0.3][i],0.2,
-    #       "$\mu={0:4.2f}$".format(p[0]),
-    #       transform=ax[i].transAxes,
-    #       ha='left',
-    #       va='bottom',
-    #       bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #       )
-           
-    #ax[i].text(0.7,0.03,
-    #        titlemap[province],
-    #        transform=ax[i].transAxes,
-    #        ha='right',
-    #        va='bottom',
-    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #        )
+    ax[i].text(0.03,0.97,
+            "{}".format(roman[i]),
+            transform=ax[i].transAxes,
+            ha='left',
+            va='top',
+            fontweight='bold',
+            fontsize=10,
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
+    if i == 0:
+        ax[i].text(0.75,0.45,
+                "Feb. 2nd".format(p[0]),
+                transform=ax[i].transAxes,
+                ha='center',
+                va='bottom',
+                fontsize=9,
+                bbox={'facecolor':'w','edgecolor':'w','pad':0}
+                )
+    ax[i].text(0.7,0.2,
+            "$\mu={0:4.2f}$".format(p[0]),
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
+    ax[i].text(0.7,0.03,
+            titlemap[province],
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
     if _r < n_row-1:
         [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
-    ax[i].set_yticks([10,100,1000,10000])
+    ax[i].set_yticks([1,10,100,1000])
 
     bp.strip_axis(pl.gca())
 
-#ax[0].text(-0.4,1.1,
-#           'C',
-#            transform=ax[0].transAxes,
-#            ha='left',
-#            va='top',
-#            fontweight='bold',
-#            fontsize=14,
-#            bbox={'facecolor':'w','edgecolor':'w','pad':0}
-#        )
+ax[0].text(-0.4,1.1,
+           'C',
+            transform=ax[0].transAxes,
+            ha='left',
+            va='top',
+            fontweight='bold',
+            fontsize=14,
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+        )
 
     
 pl.gcf().tight_layout()
-pl.gcf().subplots_adjust(wspace=0.4,hspace=0.3)
-pl.gcf().savefig("powerlaw_fit_figures/fit_powerlaw_small_hubei_china.png",dpi=300,transparent=True)
+pl.gcf().subplots_adjust(wspace=0.3,hspace=0.3)
+pl.gcf().savefig("powerlaw_fit_figures/fit_powerlaw_500.png",dpi=300)
 
 
 

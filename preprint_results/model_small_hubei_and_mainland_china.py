@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0,'..')
 
 import numpy as np
 from scipy.integrate import ode
@@ -34,10 +35,8 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('data/all_confirmed_cases_with_population.json','r') as f:
+with open('../data/all_confirmed_cases_with_population.json','r') as f:
     data = json.load(f)
-with open('data/all_confirmed_csse_cases_with_population.json','r') as f:
-    datafeb = json.load(f)
 
 tuplelist = [ (p, d)  for p, d in data.items()\
                                if max(d['cases']) >= 20\
@@ -89,20 +88,10 @@ for province, pdata in tqdm(tuplelist[:2]):
         continue
 
     i0 = np.where(cases>0)[0][0]
-    tswitch = t[-1]
     t = t[i0:]
     cases = cases[i0:]
 
-    t2 = np.array(datafeb[province]['times'])
-    cases2 = np.array(datafeb[province]['cases'])
-    dates2 = np.array(datafeb[province]['dates'],np.datetime64)
-    print(dates2, cases2)
-    i0 = np.where(dates2>=np.datetime64("2020-02-13"))[0][0]
-    t2 = t2[i0:]
-    cases2 = cases2[i0:]
-    dates2 = dates2[i0:]
-
-
+    print(pdata['population'])
 
     if loaded_fits: 
         params = fit_parameters[province]
@@ -117,11 +106,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     #pl.sca(ax[i])
 
     tt = np.logspace(np.log(t[0]), np.log(50), base=np.exp(1))
-    tt1 = tt[tt<=tswitch] 
-    tt2 = tt[tt>tswitch] 
     tt_dates = np.array( (tt-1) *24*3600 ,np.timedelta64) + dates[0]
-    tt1_dates = tt_dates[tt<=tswitch] 
-    tt2_dates = tt_dates[tt>tswitch] 
     result = model.SIRX(tt, cases[0], 
                         params['eta'],
                         params['rho'],
@@ -150,9 +135,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     Xlabel = None
     Ilabel = None
     ax[i].plot(t, cases,marker=markers[i],c=colors[i],label=None,mfc='None',)
-    ax[i].plot(t2, cases2,marker='o',ms=6,c='grey',label=None,mfc='None',)
-    ax[i].plot(tt1, X[tt<=tswitch],'-',c='k',label=Xlabel)
-    ax[i].plot(tt2, X[tt>tswitch],'-.',c='k',label=None)
+    ax[i].plot(tt, X,'-',c='k',label=Xlabel)
     ax[i].plot(tt, I,'--',c=colors[2],lw=1.5,label=Ilabel)
     ax[i].plot([max_tt]*2, [0,max_dates_pos[i]],':',c=colors[0],lw=1.5)
     #ax[i].text(max_tt, max_dates_pos[i], max_dates[i],
