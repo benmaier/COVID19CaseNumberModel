@@ -9,12 +9,12 @@ import json
 from tqdm import tqdm
 from bfmplot import pl
 from bfmplot import brewer_qualitative, simple_cycler, markers
-from SIRX import SIRXShutdownModel
+from SIRX import SIRXQuarantineModel
 import pickle
 
 import bfmplot as bp
 
-model = SIRXShutdownModel()
+model = SIRXQuarantineModel()
 
 colors = simple_cycler(brewer_qualitative)
 
@@ -66,7 +66,7 @@ roman = [ "i", "ii", "iii", "iv", "v", "vi"]
 
 
 i = -1
-for province, pdata in tqdm(tuplelist[:]):
+for province, pdata in tqdm(tuplelist):
     i += 1
 
     t = np.array(pdata['times'])
@@ -95,7 +95,7 @@ for province, pdata in tqdm(tuplelist[:]):
     if loaded_fits: 
         params = fit_parameters[province]
     else:
-        out = model.fit(t,cases,maxfev=100000,N=pdata['population']
+        out = model.fit(t,cases,maxfev=1000,Nmax=pdata['population']
                 )
         params = out.params
         fit_parameters[province] = params
@@ -104,7 +104,7 @@ for province, pdata in tqdm(tuplelist[:]):
 
     pl.sca(ax[i])
 
-    tt = np.logspace(np.log(t[0]), np.log(60), base=np.exp(1))
+    tt = np.logspace(np.log(t[0]), np.log(35), base=np.exp(1))
     result = model.SIRX(tt, cases[0], 
                         params['eta'],
                         params['rho'],
@@ -139,48 +139,49 @@ for province, pdata in tqdm(tuplelist[:]):
             fontsize=12,
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.03,0.8 if province != 'mainland_china' else 0.3,
+    ax[i].text(0.03,0.8,
             titlemap[province],
             transform=ax[i].transAxes,
             ha='left',
             va='top',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.8,0.03,
+    ax[i].text(0.97,0.5,
             r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
             transform=ax[i].transAxes,
             ha='right',
             va='bottom',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    #ax[i].text(0.8,0.03,
-    #        r"$P=%4.2f$" %((params['kappa0'].value)/(params['kappa'].value+params['kappa0'].value)),
-    #        transform=ax[i].transAxes,
-    #        ha='right',
-    #        va='bottom',
-    #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
-    #        )
+    ax[i].text(0.97,0.38,
+            r"$N_\mathrm{eff}=%d$" %(params['N'].value),
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
 
-    pl.xscale('log')
-    pl.yscale('log')
+    #pl.xscale('log')
+    #pl.yscale('log')
     ylim = pl.gca().get_ylim()
     min_ylim = 10**np.floor(np.log(ylim[0])/np.log(10))
     max_ylim = 10**np.ceil(np.log(ylim[1])/np.log(10))
     if min_ylim < 1:
         min_ylim = 1
-    pl.ylim([min_ylim, max_ylim])
-    pl.xlim([1,60])
-    if _r < n_row-1:
-        [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
+    #pl.ylim([min_ylim, max_ylim])
+    #if _r < n_row-1:
+    #    [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
+    pl.xlim([0,35])
+    pl.xticks([0,10,20,30])
     bp.strip_axis(pl.gca())
 
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/shutdown_model_all_confirmed_fit_after_feb_12.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/SI_Fig_05.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/linlin_quarantine_model_all_confirmed_fit_after_feb_11.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/SI_Fig_04.png",dpi=300)
 
 if not loaded_fits:
-    with open('fit_parameters/shutdown_model_all_provinces_after_feb_12.p','wb') as f:
+    with open('fit_parameters/quarantined_model_all_provinces_after_feb_12.p','wb') as f:
         pickle.dump(fit_parameters,f)
 
 pl.show()

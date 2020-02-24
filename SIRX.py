@@ -77,7 +77,7 @@ class SIRXConfirmedModel:
 
         return residual
 
-    def fit(self,t, data,maxfev=100000,params=None,N=None,Nmax=None):
+    def fit(self,t, data,maxfev=100000,params=None,N=None,Nmax=None,method='leastsq'):
 
         if params is None:
             params = Parameters()
@@ -88,7 +88,7 @@ class SIRXConfirmedModel:
             params.add('rho',value=rho, vary=False)
             params.add('kappa',value=rho,min=0)        
             params.add('kappa0',value=rho/2,min=0)
-            params.add('I0_factor', value=10,min=1)
+            params.add('I0_factor',value=10,min=0.001)
             varyN = N is None
             if varyN:
                 N = 1e7
@@ -96,7 +96,10 @@ class SIRXConfirmedModel:
                 Nmax=115000000
             params.add('N',value=N,min=1000,max=Nmax,vary=varyN)
 
-        out = minimize(self.residual, params, args=(t, data, ),maxfev=maxfev)
+        out = minimize(self.residual, params, args=(t, data, ),
+                       maxfev=maxfev,
+                       method=method,
+                )
         return out
 
 class SIRXShutdownModel:
@@ -183,14 +186,16 @@ class SIRXShutdownModel:
             eta = R0*rho
             params.add('eta',value=eta,vary=False)
             params.add('rho',value=rho, vary=False)
-            params.add('kappa0',value=rho,vary=True)        
-            params.add('kappa',value=0,vary=False)
+            params.add('kappa0',value=rho,vary=True,min=0)        
+            params.add('kappa',value=0,vary=False,min=0)
             params.add('I0_factor', value=10,min=1)
             varyN = N is None
             if varyN:
                 N = 1e7
-            if Nmax is None:
+            if Nmax is None and varyN:
                 Nmax=115000000
+            else:
+                Nmax=None
             params.add('N',value=N,min=100000,max=Nmax,vary=varyN)
 
         out = minimize(self.residual, params, args=(t, data, ),maxfev=maxfev)
@@ -282,12 +287,12 @@ class SIRXQuarantineModel:
             params.add('rho',value=rho, vary=False)
             params.add('kappa',value=rho,min=0)        
             params.add('kappa0',value=0,min=0,vary=False)
-            params.add('I0_factor', value=10,min=1)
+            params.add('I0_factor', value=10,min=0.001)
             varyN = N is None
             if varyN:
                 N = 10000
             if Nmax is None:
-                Nmax=115000000
+                Nmax=1000000000
             params.add('N',value=N,min=10,max=Nmax,vary=varyN)
 
         out = minimize(self.residual, params, args=(t, data, ),maxfev=maxfev)

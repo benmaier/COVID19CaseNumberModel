@@ -95,7 +95,7 @@ for province, pdata in tqdm(tuplelist):
     if loaded_fits: 
         params = fit_parameters[province]
     else:
-        out = model.fit(t,cases,maxfev=1000,Nmax=pdata['population']
+        out = model.fit(t,cases,maxfev=4000,Nmax=pdata['population']
                 )
         params = out.params
         fit_parameters[province] = params
@@ -177,7 +177,7 @@ for province, pdata in tqdm(tuplelist):
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
 pl.gcf().savefig("model_fit_figures/quarantine_model_all_confirmed_fit_after_feb_11.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/SI_Fig_02.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/SI_Fig_03.png",dpi=300)
 
 if not loaded_fits:
     with open('fit_parameters/quarantined_model_all_provinces_after_feb_12.p','wb') as f:

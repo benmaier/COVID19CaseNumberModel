@@ -139,14 +139,14 @@ for province, pdata in tqdm(tuplelist[:]):
             fontsize=12,
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.03,0.8 if province != 'mainland_china' else 0.3,
+    ax[i].text(0.97,0.38,
             titlemap[province],
             transform=ax[i].transAxes,
-            ha='left',
-            va='top',
+            ha='right',
+            va='bottom',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.8,0.03,
+    ax[i].text(0.97,0.5,
             r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
             transform=ax[i].transAxes,
             ha='right',
@@ -161,23 +161,24 @@ for province, pdata in tqdm(tuplelist[:]):
     #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
     #        )
 
-    pl.xscale('log')
-    pl.yscale('log')
+    #pl.xscale('log')
+    #pl.yscale('log')
     ylim = pl.gca().get_ylim()
     min_ylim = 10**np.floor(np.log(ylim[0])/np.log(10))
     max_ylim = 10**np.ceil(np.log(ylim[1])/np.log(10))
     if min_ylim < 1:
         min_ylim = 1
-    pl.ylim([min_ylim, max_ylim])
-    pl.xlim([1,60])
-    if _r < n_row-1:
-        [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
+    #pl.ylim([min_ylim, max_ylim])
+    #if _r < n_row-1:
+    #    [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
+    pl.xlim([0,35])
+    pl.xticks([0,10,20,30])
     bp.strip_axis(pl.gca())
 
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/shutdown_model_all_confirmed_fit_after_feb_12.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/SI_Fig_05.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/linlin_shutdown_model_all_confirmed_fit_after_feb_12.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/SI_Fig_06.png",dpi=300)
 
 if not loaded_fits:
     with open('fit_parameters/shutdown_model_all_provinces_after_feb_12.p','wb') as f:

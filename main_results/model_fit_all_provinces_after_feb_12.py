@@ -184,7 +184,7 @@ for province, pdata in tqdm(tuplelist[:]):
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
 pl.gcf().savefig("model_fit_figures/all_confirmed_fit_after_feb_12.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/SI_Fig_01.png",dpi=300)
+pl.gcf().savefig("model_fit_figures/SI_Fig_01b.png",dpi=300)
 
 if not loaded_fits:
     with open('fit_parameters/all_provinces_after_feb_12.p','wb') as f:
