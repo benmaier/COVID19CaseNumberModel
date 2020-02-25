@@ -49,7 +49,7 @@ cd main_results; model_large_hubei_and_mainland_china.py fit_parameters/hubei_ch
 cd ../main_results; python model_fit_confirmed_cases_500.py fit_parameters/confirmed_cases_500.p
 ```
 
-![modelFitHubeiMainland](main_results/model_fit_figures/hubei_and_mainland_china.png)
+![modelFitHubeiMainland](main_results/model_fit_figures/hubei_and_mainland_china_with_new_data.png)
 
 ![modelFitConfirmed500](main_results/model_fit_figures/model_fit_confirmed_500.png)
 
