@@ -78,17 +78,17 @@ class SIRXConfirmedModel:
         return residual
 
     def fit(self,t, data,maxfev=100000,params=None,N=None,Nmax=None,method='leastsq'):
+        R0 = 6.2
+        rho = 1/8
+        eta = R0*rho
 
         if params is None:
             params = Parameters()
-            R0 = 6.2
-            rho = 1/8
-            eta = R0*rho
             params.add('eta',value=eta,vary=False)
             params.add('rho',value=rho, vary=False)
             params.add('kappa',value=rho,min=0)        
             params.add('kappa0',value=rho/2,min=0)
-            params.add('I0_factor',value=10,min=0.001)
+            params.add('I0_factor',value=10,min=0.001,vary=True)
             varyN = N is None
             if varyN:
                 N = 1e7
@@ -96,10 +96,16 @@ class SIRXConfirmedModel:
                 Nmax=115000000
             params.add('N',value=N,min=1000,max=Nmax,vary=varyN)
 
-        out = minimize(self.residual, params, args=(t, data, ),
-                       maxfev=maxfev,
-                       method=method,
-                )
+        if method=='Nelder':
+            out = minimize(self.residual, params, args=(t, data, ),
+                           method=method,
+                        )
+        else:
+            out = minimize(self.residual, params, args=(t, data, ),
+                           maxfev=maxfev,
+                           method=method,
+                        )
+
         return out
 
 class SIRXShutdownModel:
@@ -280,14 +286,14 @@ class SIRXQuarantineModel:
 
         if params is None:
             params = Parameters()
-            R0 = 6
+            R0 = 6.2
             rho = 1/8
             eta = R0*rho
             params.add('eta',value=eta,vary=False)
             params.add('rho',value=rho, vary=False)
-            params.add('kappa',value=rho,min=0)        
-            params.add('kappa0',value=0,min=0,vary=False)
-            params.add('I0_factor', value=10,min=0.001)
+            params.add('kappa',value=0,min=0)        
+            params.add('kappa0',value=rho,min=0,vary=False)
+            params.add('I0_factor', value=300,min=0.001)
             varyN = N is None
             if varyN:
                 N = 10000

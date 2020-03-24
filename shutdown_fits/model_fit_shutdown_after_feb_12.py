@@ -126,7 +126,7 @@ for province, pdata in tqdm(tuplelist[:]):
     _c = i % n_col
     _r = i // n_col
     if _r == n_row-1:
-        pl.xlabel('days since Jan. 20th')        
+        pl.xlabel('days since Jan. 21st') 
     if _c == 0:
         pl.ylabel('confirmed')
     #pl.title(titlemap[province])
@@ -147,6 +147,7 @@ for province, pdata in tqdm(tuplelist[:]):
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
     ax[i].text(0.8,0.03,
+            #r"$\kappa_0=%4.2f/$d" %(params['kappa0'].value),
             r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
             transform=ax[i].transAxes,
             ha='right',

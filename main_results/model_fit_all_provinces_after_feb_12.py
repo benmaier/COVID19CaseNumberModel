@@ -47,6 +47,7 @@ loaded_fits = len(sys.argv) > 1
 if loaded_fits:
     pickle_filename = sys.argv[1]
 
+LINLIN = True
 
 n_fits = len(tuplelist)
 n_col = int(np.ceil(np.sqrt(n_fits)))
@@ -133,7 +134,7 @@ for province, pdata in tqdm(tuplelist[:]):
     _c = i % n_col
     _r = i // n_col
     if _r == n_row-1:
-        pl.xlabel('days since Jan. 20th')        
+        pl.xlabel('days since Jan. 21st')        
     if _c == 0:
         pl.ylabel('confirmed')
     #pl.title(titlemap[province])
@@ -153,41 +154,94 @@ for province, pdata in tqdm(tuplelist[:]):
             va='top',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.8,0.15,
+
+    def ratestr(rate,name=r'\kappa'):
+        if np.log(rate)/np.log(10) < -2:
+            return r"$%s=%4.1e/$d" % (name, rate)
+        else:
+            return r"$%s=%4.2f/$d" % (name, rate)
+    if LINLIN:
+        if False:
+            __y = [0.15,0.03]
+        else:
+            __y = [0.5,0.35]
+        ax[i].text(1.0,__y[0],
+                #ratestr(params['kappa'].value, r'\kappa'),
+                r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
+                transform=ax[i].transAxes,
+                ha='right',
+                va='bottom',
+                bbox={'facecolor':'w','edgecolor':'w','pad':0}
+                )
+        ax[i].text(1.0,__y[1],
+                #ratestr(params['kappa0'].value, r'\kappa_0'),
+                r"$P=%4.2f$" %((params['kappa0'].value)/(params['kappa'].value+params['kappa0'].value)),
+                transform=ax[i].transAxes,
+                ha='right',
+                va='bottom',
+                bbox={'facecolor':'w','edgecolor':'w','pad':0}
+                )
+    else:
+        ax[i].text(0.8,0.15,
             r"$Q=%4.2f$" %((params['kappa'].value+params['kappa0'].value)/(params['rho'].value+params['kappa'].value+params['kappa0'].value)),
             transform=ax[i].transAxes,
             ha='right',
             va='bottom',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
-    ax[i].text(0.8,0.03,
+        ax[i].text(0.8,0.03,
             r"$P=%4.2f$" %((params['kappa0'].value)/(params['kappa'].value+params['kappa0'].value)),
             transform=ax[i].transAxes,
             ha='right',
             va='bottom',
             bbox={'facecolor':'w','edgecolor':'w','pad':0}
             )
+        #ax[i].text(0.8,0.15,
+        #        ratestr(params['kappa'].value, r'\kappa'),
+        #        transform=ax[i].transAxes,
+        #        ha='right',
+        #        va='bottom',
+        #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
+        #        )
+        #ax[i].text(0.8,0.03,
+        #        ratestr(params['kappa0'].value, r'\kappa_0'),
+        #        transform=ax[i].transAxes,
+        #        ha='right',
+        #        va='bottom',
+        #        bbox={'facecolor':'w','edgecolor':'w','pad':0}
+        #        )
 
-    pl.xscale('log')
-    pl.yscale('log')
+    if not LINLIN:
+        pl.xscale('log')
+        pl.yscale('log')
     ylim = pl.gca().get_ylim()
     min_ylim = 10**np.floor(np.log(ylim[0])/np.log(10))
     max_ylim = 10**np.ceil(np.log(ylim[1])/np.log(10))
     if min_ylim < 1:
         min_ylim = 1
-    pl.ylim([min_ylim, max_ylim])
-    pl.xlim([1,60])
-    if _r < n_row-1:
-        [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
+    if not LINLIN:
+        pl.ylim([min_ylim, max_ylim])
+        pl.xlim([1,60])
+    else:
+        pl.xlim([0,40])
+    if not LINLIN:
+        if _r < n_row-1:
+            [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
     bp.strip_axis(pl.gca())
 
 pl.gcf().tight_layout()
 pl.gcf().subplots_adjust(wspace=0.34,hspace=0.3)
-pl.gcf().savefig("model_fit_figures/all_confirmed_fit_after_feb_12.png",dpi=300)
-pl.gcf().savefig("model_fit_figures/SI_Fig_01b.png",dpi=300)
+fn = 'all_provinces_after_feb_12.p'
+#fn = 'different_initial_conds_after_feb_12.p'
+name = 'linlin' if LINLIN else 'loglog'
+pl.gcf().savefig("model_fit_figures/all_confirmed_fit_after_feb_12_{}.png".format(name),dpi=300)
+if LINLIN:
+    pl.gcf().savefig("model_fit_figures/SI_Fig_02.png",dpi=300)
+else:
+    pl.gcf().savefig("model_fit_figures/SI_Fig_01.png",dpi=300)
 
 if not loaded_fits:
-    with open('fit_parameters/all_provinces_after_feb_12.p','wb') as f:
+    with open('fit_parameters/{}'.format(fn),'wb') as f:
         pickle.dump(fit_parameters,f)
 
 pl.show()

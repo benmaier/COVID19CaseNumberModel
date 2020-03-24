@@ -59,6 +59,10 @@ for province, pdata in tqdm(tuplelist[2:10]):
 
     t = np.array(pdata['times'])
     cases = np.array(pdata['cases'])
+    if pdata['dates'][0] == "2020-01-22 12:00:00":
+        t += 14/24
+    else:
+        dt = 0
 
     if max(cases) <= 20:
         continue
@@ -76,8 +80,8 @@ for province, pdata in tqdm(tuplelist[2:10]):
     if len(t) < 8:
         continue
 
-    f = lambda x, mu, B: B*x**mu
-    p,_ = curve_fit(f, _t, _cases, [1.9,4.5])
+    f = lambda x, mu, B: B*(x)**mu
+    p,_ = curve_fit(f, _t, _cases, [1.5,4.5])
 
     print(p)
 
@@ -85,6 +89,21 @@ for province, pdata in tqdm(tuplelist[2:10]):
 
     pl.sca(ax[i])
 
+    ax[i].text(0.7,0.2,
+            "$\mu={0:4.2f}$".format(p[0]),
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0},
+            zorder = -1000,
+            )
+    ax[i].text(0.7,0.03,
+            titlemap[province],
+            transform=ax[i].transAxes,
+            ha='right',
+            va='bottom',
+            bbox={'facecolor':'w','edgecolor':'w','pad':0}
+            )
     pl.plot(t, cases,marker=markers[i+2],c=colors[i+2],label='data',mfc='None')
     pl.plot(tt, f(tt,*p),c='k',lw=1,label='$Q_I$')
 
@@ -121,20 +140,6 @@ for province, pdata in tqdm(tuplelist[2:10]):
                 fontsize=9,
                 bbox={'facecolor':'w','edgecolor':'w','pad':0}
                 )
-    ax[i].text(0.7,0.2,
-            "$\mu={0:4.2f}$".format(p[0]),
-            transform=ax[i].transAxes,
-            ha='right',
-            va='bottom',
-            bbox={'facecolor':'w','edgecolor':'w','pad':0}
-            )
-    ax[i].text(0.7,0.03,
-            titlemap[province],
-            transform=ax[i].transAxes,
-            ha='right',
-            va='bottom',
-            bbox={'facecolor':'w','edgecolor':'w','pad':0}
-            )
     if _r < n_row-1:
         [ x.set_visible(False) for x in ax[i].xaxis.get_major_ticks() ]
     ax[i].set_yticks([1,10,100,1000])

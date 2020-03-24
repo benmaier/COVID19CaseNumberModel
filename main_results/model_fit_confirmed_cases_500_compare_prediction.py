@@ -66,7 +66,7 @@ else:
 letter = "abcdefg"
 roman = [ "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix"]
 
-max_dates = ['Feb. 2nd.', 'Feb. 2nd.', 'Jan. 31st', 'Feb. 1st', 'Feb. 5th', 'Feb. 3rd', 'Feb. 3rd', 'Feb. 1st']
+max_dates = ['Feb. 2nd.', 'Feb. 2nd.', 'Jan. 31st', 'Feb. 1st', 'Feb. 4th', 'Feb. 3rd', 'Feb. 3rd', 'Feb. 1st']
 max_dates_pos = [1500, 1500, 1500, 1500, 1500, 1500, 1500, 900]
 max_dates_va = 4*['bottom'] + 4*['top']
 
@@ -78,6 +78,9 @@ for province, pdata in tqdm(tuplelist[2:10]):
     t = np.array(pdata['times'])
     cases = np.array(pdata['cases'])
     dates = np.array(pdata['dates'],dtype=np.datetime64)
+    if pdata['dates'][0] == "2020-01-22 12:00:00":
+        t += 14/24
+        print("===================Jiangsu=============")
 
     if max(cases) <= 20:
         continue
@@ -88,10 +91,13 @@ for province, pdata in tqdm(tuplelist[2:10]):
     cases = cases[i0:]
     dates = dates[i0:]
 
-    t2 = np.array(datafeb[province]['times'])
+    t2 = np.array(datafeb[province]['times']) + (1-5/24) # adjust for shift of t0 in data
     cases2 = np.array(datafeb[province]['cases'])
     dates2 = np.array(datafeb[province]['dates'],np.datetime64)
-    print(dates2, cases2)
+    print(province)
+    print(t[0], dates[0])
+    print(t2[0], dates2[0])
+    #print(dates2, cases2)
     i0 = np.where(dates2>=np.datetime64("2020-02-13"))[0][0]
     t2 = t2[i0:]
     cases2 = cases2[i0:]
@@ -115,7 +121,8 @@ for province, pdata in tqdm(tuplelist[2:10]):
     tt = np.logspace(np.log(t[0]), np.log(30), 1000,base=np.exp(1))
     tt1 = tt[tt<=tswitch] 
     tt2 = tt[tt>tswitch] 
-    tt_dates = np.array( (tt-1) *24*3600 ,np.timedelta64) + dates[0]
+    tt_dates = np.array( (tt-t[0]) *24*3600 ,np.timedelta64) + dates[0]
+    print(tt[0], tt_dates[0])
     tt1_dates = tt_dates[tt<=tswitch] 
     tt2_dates = tt_dates[tt>tswitch] 
     result = model.SIRX(tt, cases[0], 
@@ -132,7 +139,8 @@ for province, pdata in tqdm(tuplelist[2:10]):
     print(imax)
     max_date = tt_dates[imax]
     max_tt = tt[imax]
-    print(max_date)
+    print("=======", province, "max", max_tt, max_date)
+    print("=======", province, "max", tt[100], tt_dates[100])
 
 
 #S = result[0,:]*N

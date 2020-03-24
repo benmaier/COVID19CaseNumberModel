@@ -95,7 +95,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     t = t[i0:]
     cases = cases[i0:]
 
-    t2 = np.array(datafeb[province]['times'])
+    t2 = np.array(datafeb[province]['times']) + 1 - 5/24
     cases2 = np.array(datafeb[province]['cases'])
     dates2 = np.array(datafeb[province]['dates'],np.datetime64)
     print(dates2, cases2)
@@ -118,10 +118,10 @@ for province, pdata in tqdm(tuplelist[:2]):
 
     #pl.sca(ax[i])
 
-    tt = np.logspace(np.log(t[0]), np.log(50), base=np.exp(1))
+    tt = np.logspace(np.log(t[0]), np.log(50), 1000,base=np.exp(1))
     tt1 = tt[tt<=tswitch] 
     tt2 = tt[tt>tswitch] 
-    tt_dates = np.array( (tt-1) *24*3600 ,np.timedelta64) + dates[0]
+    tt_dates = np.array( (tt-t[0]) *24*3600 ,np.timedelta64) + dates[0]
     tt1_dates = tt_dates[tt<=tswitch] 
     tt2_dates = tt_dates[tt>tswitch] 
     result = model.SIRX(tt, cases[0], 
@@ -140,7 +140,7 @@ for province, pdata in tqdm(tuplelist[:2]):
     print(imax)
     max_date = tt_dates[imax]
     max_tt = tt[imax]
-    print(max_date)
+    print("=======", province, "max", max_tt, max_date)
 
     curves[i] = {}
     curves[i]['I'] = {'x': tt_dates, 'y': I}

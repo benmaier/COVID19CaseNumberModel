@@ -81,7 +81,15 @@ for province, pdata in tqdm(tuplelist[:2]):
         continue
 
     f = lambda x, mu, B: B*x**mu
+    fexp = lambda x, mu, B: B*np.exp(mu*(x-1))
     p,_ = curve_fit(f, _t, _cases, [1.9,4.5])
+
+    if i==0:
+        _d = 7
+    else:
+        _d = 4
+    pexp,_ = curve_fit(fexp, _t[_t<=_d], _cases[_t<=_d], [1,1.])
+    print("pexp =",pexp)
 
     print(p)
 
@@ -89,8 +97,11 @@ for province, pdata in tqdm(tuplelist[:2]):
 
     pl.sca(ax[i])
 
+    growth_rate = (6.2-1)/8
+
     pl.plot(t, cases,marker=markers[i],c=colors[i],label='data',mfc='None')
     pl.plot(tt, f(tt,*p),c='k',lw=1,label='$Q_I$')
+    pl.plot(tt, fexp(tt,growth_rate*1.1,_cases[0]*2.3),c=colors[2],lw=1,label='$Q_I$',ls='--')
 
     _c = i % (n_col)
     _r = i // (n_col)

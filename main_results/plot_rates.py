@@ -4,6 +4,11 @@ import numpy as np
 import simplejson as json
 from tabulate import tabulate
 
+from bfmplot import pl
+
+from bfmplot import brewer_qualitative, simple_cycler, markers
+colors = simple_cycler(brewer_qualitative)
+
 
 class REPL(dict):
 
@@ -16,7 +21,10 @@ class REPL(dict):
         except KeyError as e:
             return i
 
-with open('fit_parameters/all_provinces_before_feb_12.p','rb') as f:
+fn = 'all_provinces_after_feb_12.p'
+fn = 'different_initial_conds_after_feb_12.p'
+
+with open('fit_parameters/'+fn,'rb') as f:
     fit_parameters = pickle.load(f)
 #with open('fit_parameters/confirmed_cases_500.p','rb') as f:
 #    fit_parameters = pickle.load(f)
@@ -38,7 +46,9 @@ tuplelist = sorted([ t for t in tuplelist ],key=lambda x: -max(x[1]['cases']))
 titlemap = REPL({'mainland_china':'All exc. Hubei'})
 
 tabledata = []
-for province, pdata in tuplelist[:10]:
+ks = []
+k0s = []
+for province, pdata in tuplelist:
     p = fit_parameters[province]
     k = p['kappa'].value
     k0 = p['kappa0'].value
@@ -48,19 +58,45 @@ for province, pdata in tuplelist[:10]:
 
     N = pdata['population'] / 1e6
 
+    print(p['kappa0'],p['kappa'])
     Q = (k+k0)/(b+k+k0)
     P = k0/(k+k0)
     R0eff = a / (b+k+k0)
-    tabledata.append([titlemap[province], N, Q, P, k, k0, I0f, R0eff, ])
-    print(province,k,k0)
-print(tabulate(tabledata,headers=['Province', '$N/10^6$','$Q$', '$P$', '$\kappa$ [d$^{-1}$]', '$\kappa_0$ [d$^{-1}$]', '$I_0/X_0$', '$R_{0,\mathrm{eff}}$'],floatfmt=("",".1f", ".2f", ".2f", ".3f", ".3f",".2f",".2f") ))
-latex = str(tabulate(tabledata,headers=['Province', '$N/10^6$','$Q$', '$P$',  '$\kappa$ [d$^{-1}$]', '$\kappa_0$ [d$^{-1}$]', '$I_0/X_0$','$R_{0,\mathrm{eff}}$'],tablefmt="latex_raw",floatfmt=("",".1f", ".2f", ".2f",".3f", ".3f",".2f",".2f") ))
+    tabledata.append([titlemap[province], N, Q, P, R0eff, k, k0, I0f, ])
+    ks.append(k)
+    k0s.append(k0)
 
+for i, (_k0, _ks) in enumerate(zip(k0s, ks)):
+    pl.plot([_k0],[_ks],marker=markers[i],color=colors[i],markersize=7)
 
-with open('fit_parameters/parameters.tex','w') as f:
-    f.write(latex)
+pl.xlim([0,0.14])
+pl.ylim([-.05,0.55])
+pl.gcf().savefig('model_fit_figures/'+fn+'.png',dpi=300)
+
+pl.show()
+
+headers = [
+             'Province', 
+             '$N/10^6$','$Q$', 
+             '$P$', 
+             '$R_{0,\mathrm{eff}}$', 
+             '$\kappa$ [$\mathrm{d}^{-1}$]',
+             '$\kappa_{0}$ [$\mathrm{d}^{-1}$]',
+             '$I_0/X_0$', 
+          ]
+floatfmt = (
+               "",
+               ".1f", 
+               ".2f", 
+               ".2f",
+               ".2f",
+               ".3f",
+               ".3f",
+               ".2f",
+           ) 
+latex = str(tabulate(tabledata,headers=headers,tablefmt="latex_raw",floatfmt=floatfmt))
+print(latex)
+
 
 vals = np.array(tabledata)[:,1:]
 vals = np.array(vals,dtype=float)
-print(vals.mean(axis=0))
-print(vals.std(axis=0))
