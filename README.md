@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/240985561.svg)](https://zenodo.org/badge/latestdoi/240985561)
+
 # COVID-19 case number growth
 
 The growth of case numbers concerning the recent COVID-19 outbreak
